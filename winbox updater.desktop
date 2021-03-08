@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Winbox Updater
+Comment=Updater for Winbox
+Exec=/home/pi/pi-winbox/winbox -u
+Icon=/home/pi/pi-winbox/logo.png
+Terminal=true
+Type=Application
+Categories=Utility;

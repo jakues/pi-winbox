@@ -1,0 +1,88 @@
+#!/bin/bash
+
+WB_DIR="$HOME/pi-winbox/winbox.exe"
+WB_PATH="$HOME/pi-winbox"
+WB_URL="https://mt.lv/winbox"
+DESK_PATH="$HOME/.local/share/applications"
+
+# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+# credit
+# pi-hole variable
+# xD
+# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+CR='\033[0m'
+COL_LIGHT_GREEN='\e[1;32m'
+COL_LIGHT_RED='\e[1;31m'
+TICK="[${COL_LIGHT_GREEN}✓${CR}]"
+CROSS="[${COL_LIGHT_RED}✗${CR}]"
+INFO="[i]"
+QST="[?]"
+DONE="${COL_LIGHT_GREEN} done!${CR}"
+
+install() {
+	# updating repo
+	printf "  %b %s ... " "${INFO}" "Updating Packages"
+	sudo apt-get update -y -qq
+	printf "%b\\n" "${TICK}"
+
+	# checking wine
+	printf "  %b %s ... " "${INFO}" "Checking Wine"
+	if [[ -f /usr/local/bin/wine ]] ; then
+		printf "%b\\n" "${TICK}"
+	else
+		printf "%b\\n" "${CROSS}"
+		exit
+	fi
+
+	# kick off
+	printf "  %b %s ... " "${INFO}" "Downloading Packages"
+	mkdir -p ${WB_PATH}
+	wget -q ${WB_URL} -O ${WB_DIR}
+	printf "%b\\n" "${TICK}"
+	
+	# create deskop launcher
+	printf "  %b %s ... " "${INFO}" "Creating Desktop Launcher"
+	cp ${WB_PATH}/winbox.desktop ${DESK_PATH}
+	cp ${WB_PATH}/'winbox updater.desktop' ${DESK_PATH}
+	printf "%b\\n" "${TICK}"
+	printf "  %b %s" "${INFO}" "Successfully Instal Winbox"
+	printf "  %b %s" "${INFO}" "Closing in 30 seconds"
+	sleep 30 ; exit
+}
+
+update() {
+    # show message
+	printf "  %b %s ... " "${INFO}" "Updating Packages"
+	# do update
+	sudo apt-get update -y -qq ; sudo apt-get install wget -y -qq
+	# show update status
+	printf "%b\\n" "${TICK}"
+
+	printf "  %b %s ... " "${INFO}" "Downloading Packages"
+	wget -q ${WB_URL} -O ${WB_DIR}
+	printf "%b\\n" "${TICK}"
+	printf "  %b %s" "${INFO}" "Update Completed"
+	printf "  %b %s" "${INFO}" "Closing in 30 seconds"
+	sleep 30 ; exit
+}
+
+start() {
+	wine ${WB_DIR}
+}
+
+case "$1" in
+ --instal|-i)
+install
+;;
+ --start|-s)
+start
+;;
+ --update|-u)
+update
+;;
+esac
